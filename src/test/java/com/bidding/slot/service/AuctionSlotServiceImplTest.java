@@ -14,12 +14,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.bidding.slot.entity.AuctionSlot;
 import com.bidding.slot.dto.AvailableSlotDTO;
 import com.bidding.slot.dto.SlotDuration;
 import com.bidding.slot.repository.AuctionSlotRepository;
+import com.bidding.slot.restCallHandler.ProductClient;
 import com.bidding.slot.strategy.AuctionSlotStrategy;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +36,9 @@ class AuctionSlotServiceImplTest {
 
     @Mock
     private AuctionSlotStrategy mockStrategy;
+    
+    @Mock
+	private ProductClient productClient;
 
     @InjectMocks
     private AuctionSlotServiceImpl auctionSlotService;
@@ -46,7 +52,8 @@ class AuctionSlotServiceImplTest {
     void testCreateAuctionSlot() {
         AuctionSlot slot = new AuctionSlot();
         when(auctionSlotRepository.save(slot)).thenReturn(slot);
-
+        when(productClient.getProductById(slot.getProductId())).thenReturn(new ResponseEntity<>(slot, HttpStatus.OK) );
+        
         AuctionSlot result = auctionSlotService.createAuctionSlot(slot);
 
         assertNotNull(result);
